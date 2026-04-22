@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSG.com 특가 분석 대시보드 | Premium Insight</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --sidebar-bg: rgba(30, 41, 59, 0.7);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --accent-color: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 20%);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 280px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 3rem;
+            letter-spacing: -0.05em;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav li {
+            margin-bottom: 1rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text-main);
+            background: var(--card-bg);
+            box-shadow: inset 0 0 0 1px var(--glass-border);
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 280px;
+            flex: 1;
+            padding: 3rem;
+            max-width: 1400px;
+        }
+
+        header {
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Dashboard Grid */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .content-section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .chart-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .chart-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transition: scale 0.5s ease;
+        }
+
+        .chart-card:hover img {
+            scale: 1.02;
+        }
+
+        .interpretation {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+
+        /* Report Section */
+        .report-content {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            line-height: 1.8;
+            color: #d1d5db;
+        }
+
+        .report-content h2, .report-content h3 {
+            color: var(--text-main);
+            margin: 2rem 0 1rem 0;
+        }
+
+        .report-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .keyword-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .keyword-table th, .keyword-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .keyword-table th {
+            color: var(--accent-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            aside { width: 80px; padding: 1rem; }
+            aside .logo, aside nav a span { display: none; }
+            main { margin-left: 80px; }
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <aside>
+        <div class="logo">SSG ANALYTICS</div>
+        <nav>
+            <ul>
+                <li><a href="#overview" class="active"><span>핵심 요약</span></a></li>
+                <li><a href="#price"><span>가격 분석</span></a></li>
+                <li><a href="#category"><span>채널 및 브랜드</span></a></li>
+                <li><a href="#text"><span>텍스트 인사이트</span></a></li>
+                <li><a href="#report"><span>종합 보고서</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <header id="overview">
+            <p class="subtitle">SSG.com Special Deal Data Visualization</p>
+            <h1>데이터 분석 인사이트</h1>
+        </header>
+
+        <section class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-label">분석 상품 수</div>
+                <div class="stat-value">380 EA</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">평균 판매가</div>
+                <div class="stat-value">₩127,217</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">최고 할인율</div>
+                <div class="stat-value">68.6%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">고유 브랜드 수</div>
+                <div class="stat-value">265 Brands</div>
+            </div>
+        </section>
+
+        <section id="price" class="content-section">
+            <h2 class="section-title">가격 및 할인 트렌드</h2>
+            <div class="card-grid">
+                <div class="chart-card">
+                    <h3>판매가 분포 분석</h3>
+                    <img src="../images/eda_01_price_dist.png" alt="판매가 분포">
+                    <div class="interpretation">
+                        데이터의 대다수가 10만 원 미만의 저가 구간에 집중되어 있으며, 100만 원 이상의 고가는 롱테일 형태를 띠고 있습니다. 중저가 생필품이 주를 이룹니다.
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>실질 할인율 분포 (0% 제외)</h3>
+                    <img src="../images/eda_02_discount_dist.png" alt="할인율 분포">
+                    <div class="interpretation">
+                        10~30% 사이의 할인율이 가장 빈번하며, 50% 이상의 초특가 상품도 일부 발견되어 공격적인 프로모션의 강도를 확인할 수 있습니다.
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>가격 vs 주문수량 산점도</h3>
+                    <img src="../images/eda_05_price_qty_scatter.png" alt="가격 수량 상관관계">
+                    <div class="interpretation">
+                        저가 상품일수록 주문량이 비약적으로 급증하는 경향이 뚜렷하며, 고가 상품군에서는 주문 빈도가 낮지만 안정적인 분포를 보여줍니다.
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>할인율 vs 주문수량 상관관계</h3>
+                    <img src="../images/eda_07_discount_qty_scatter.png" alt="할인율 수량 상관관계">
+                    <div class="interpretation">
+                        높은 할인율이 반드시 높은 주문량으로 직결되지는 않으며, 브랜드 인지도와 적절한 할인폭이 결합될 때 폭발적 성장이 일어납니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="category" class="content-section">
+            <h2 class="section-title">채널 및 브랜드 포지셔닝</h2>
+            <div class="card-grid">
+                <div class="chart-card">
+                    <h3>사이트별 상품 점유율</h3>
+                    <img src="../images/eda_03_site_pie.png" alt="사이트 비중">
+                    <div class="interpretation">
+                        신세계백화점의 비중이 압도적으로 높으며, 이는 특가 상품 구성에서 백화점 럭셔리 및 프리미엄 라인이 핵심적인 역할을 수행함을 시사합니다.
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>주요 브랜드 상품 수 (TOP 30)</h3>
+                    <img src="../images/eda_04_brand_bar.png" alt="브랜드 빈도">
+                    <div class="interpretation">
+                        삼성, 켈로그, 해태 등 인지도가 높은 대형 브랜드들이 상단에 위치하여, 소비자 유입을 위한 '파워 브랜드' 중심 전략이 유효함을 보여줍니다.
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>채널별 가격 분포 (Boxplot)</h3>
+                    <img src="../images/eda_09_price_boxplot.png" alt="가격 박스플롯">
+                    <div class="interpretation">
+                        신세계백화점이 가장 넓은 가격 스펙트럼과 상향 이상치를 보유하고 있어 프리미엄 비중이 높으며, 이마트는 상대적으로 균일한 가격대를 형성합니다.
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>브랜드별 평균 할인율 (TOP 20)</h3>
+                    <img src="../images/eda_08_brand_avg_discount.png" alt="브랜드 할인율">
+                    <div class="interpretation">
+                        브랜드마다 고유의 가격 방어 정책이 상이하며, 공격적인 할인을 택한 브랜드와 가치 유지를 우선하는 브랜드가 확연히 구분됩니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="text" class="content-section">
+            <h2 class="section-title">마케팅 키워드 인사이트 (TF-IDF)</h2>
+            <div class="card-grid">
+                <div class="chart-card">
+                    <h3>상품명 핵심 키워드 가중치</h3>
+                    <img src="../images/eda_11_tfidf_bar.png" alt="TF-IDF 분석">
+                    <div class="interpretation">
+                        '할인', '특가', '단독'이 주요 키워드로 등장하는 것은 가격 경쟁력과 플랫폼만의 희소성을 강조하는 이커머스 마케팅의 정석을 보여줍니다.
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div style="height: 100%; display: flex; flex-direction: column;">
+                        <h3>상위 키워드 요약</h3>
+                        <table class="keyword-table">
+                            <thead>
+                                <tr><th>순위</th><th>키워드</th><th>가중치</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>할인</td><td>26.77</td></tr>
+                                <tr><td>2</td><td>특가</td><td>20.11</td></tr>
+                                <tr><td>3</td><td>모음전</td><td>16.43</td></tr>
+                                <tr><td>4</td><td>인기</td><td>15.99</td></tr>
+                                <tr><td>5</td><td>단독</td><td>15.90</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="interpretation">
+                            임팩트 있는 한 줄의 '레이블링'이 구매 결정의 핵심 변수임을 확인할 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="report" class="content-section">
+            <h2 class="section-title">종합 분석 보고서 전문</h2>
+            <div class="report-content">
+                <h3>5.1 데이터 분석 총평 및 비즈니스 전략 인사이트</h3>
+                <p>본 SSG.com 특가 상품 데이터 EDA 분석을 관통하는 핵심 키워드는 '양극화된 프리미엄 이커머스'와 '데이터 기반의 정밀 마케팅'입니다. 분석 결과, SSG.com은 단순한 저가 경쟁을 넘어 신세계백화점의 고급스러운 브랜드 이미지와 이마트의 막강한 실속형 라인업을 결합한 독특한 옴니채널 생태계를 안착시켰습니다.</p>
+                <p><strong>채널별 세분화 전략:</strong> 신세계백화점 채널은 데이터 비중의 과반을 차지하며 높은 신뢰 자산을 온라인상에 전이시켰습니다. 반면 이마트와 S.COM 직매입 상품들은 일상적인 반복 구매가 일어나는 저가형 소모품에 집중하며 전체 플랫폼의 트래픽을 유도하는 '앵커' 역할을 수행합니다.</p>
+                <p><strong>가격 포지셔닝:</strong> 대다수 상품은 10~30%의 합리적인 할인 수준을 유지하며 브랜드 가치 훼손 없는 최적의 스윗 스팟을 공략 중입니다. '단독' 혜택이라는 프레임 선점이 소비자의 충성도를 결정짓는 핵심 변수입니다.</p>
+                
+                <h3>5.2 미래 성장을 위한 핵심 제언</h3>
+                <p>첫째, <strong>초개인화 큐레이션 엔진</strong>으로의 진화가 필요합니다. 단순 '모음전' 방식에서 벗어나 고객의 구매 로그와 마케팅 키워드를 실시간 매칭하는 1:1 대응이 필수적입니다.</p>
+                <p>둘째, <strong>신선보장과 럭셔리의 결합</strong>입니다. 품질에 대한 신뢰를 바탕으로 '백화점 산지 직송' 카테고리를 강화하고 고가 상품에 대한 신뢰 콘텐츠를 보강해야 합니다.</p>
+                <p>셋째, <strong>실시간 재고 기반 프로모션</strong> 도입입니다. 품절 데이터를 역으로 활용하여 재고 회전율을 높이는 다이내믹 프라이싱 알고리즘은 플랫폼의 생동감을 더해줄 것입니다.</p>
+                
+                <p>결론적으로 SSG.com은 프리미엄 채널의 신뢰도와 대중 채널의 집객력을 동시 보유한 업계 유일의 모델로서, '신뢰의 디지털화'를 통해 미래 성장을 견인할 것으로 확신합니다.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Update active link
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Simple visibility observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.content-section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
